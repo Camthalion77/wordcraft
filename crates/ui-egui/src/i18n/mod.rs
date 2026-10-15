@@ -52,7 +52,7 @@ pub struct LangInfo {
 }
 
 /// The registry. English first: it is the fallback and the source language.
-pub static LANGUAGES: [LangInfo; 20] = [
+pub static LANGUAGES: [LangInfo; 21] = [
     LangInfo { code: "en", name: "English", source: "", prefer_hans: false, editing_lang: None, catalog: OnceLock::new() },
     // Simplified Chinese; `zh`, `zh-CN`, `zh-SG` and `zh-Hans-*` resolve here (see `candidates`).
     LangInfo {
@@ -109,6 +109,15 @@ pub static LANGUAGES: [LangInfo; 20] = [
         source: include_str!("pl.tsv"),
         prefer_hans: false,
         editing_lang: Some("pl-PL"),
+        catalog: OnceLock::new(),
+    },
+    // Greek (Greece); new documents carry the Greek proofing language.
+    LangInfo {
+        code: "el",
+        name: "Ελληνικά",
+        source: include_str!("el.tsv"),
+        prefer_hans: false,
+        editing_lang: Some("el-GR"),
         catalog: OnceLock::new(),
     },
     LangInfo { code: "cs", name: "Čeština", source: include_str!("cs.tsv"), prefer_hans: false, editing_lang: None, catalog: OnceLock::new() },

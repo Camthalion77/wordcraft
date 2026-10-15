@@ -13,6 +13,8 @@ pub enum ProofLang {
     /// Polish (`pl`, `pl-PL`): the installed Hunspell dictionary (when there is one), the Polish grammar rules and the Polish
     /// hyphenation patterns.
     Pl,
+    /// Modern Greek (`el`, `el-GR`): an installed Hunspell el_GR dictionary.
+    El,
     /// Bulgarian (`bg`, `bg-BG`): hyphenation by the Bulgarian syllable rules ([`crate::bg`]).
     /// There is no Bulgarian dictionary or grammar yet, so, as for [`ProofLang::Other`], no
     /// spelling or grammar marks.
@@ -41,7 +43,8 @@ pub enum ProofLang {
 
 impl ProofLang {
     /// Every language with a spelling dictionary, in display order.
-    pub const PROOFED: [ProofLang; 7] = [ProofLang::En, ProofLang::Pl, ProofLang::Pt, ProofLang::It, ProofLang::Hr, ProofLang::Tr, ProofLang::Ru];
+    pub const PROOFED: [ProofLang; 8] =
+        [ProofLang::En, ProofLang::Pl, ProofLang::El, ProofLang::Pt, ProofLang::It, ProofLang::Hr, ProofLang::Tr, ProofLang::Ru];
 
     /// The proofing language of a BCP 47 tag (`pl-PL`, `en_GB`, `PL`…). Only the primary subtag
     /// counts. No tag (or an empty one) is English, WordCraft's default editing language.
@@ -52,6 +55,8 @@ impl ProofLang {
             ProofLang::En
         } else if primary.eq_ignore_ascii_case("pl") || primary.eq_ignore_ascii_case("pol") {
             ProofLang::Pl
+        } else if primary.eq_ignore_ascii_case("el") || primary.eq_ignore_ascii_case("ell") || primary.eq_ignore_ascii_case("gre") {
+            ProofLang::El
         } else if primary.eq_ignore_ascii_case("bg") || primary.eq_ignore_ascii_case("bul") {
             ProofLang::Bg
         } else if primary.eq_ignore_ascii_case("pt") || primary.eq_ignore_ascii_case("por") {
@@ -74,6 +79,7 @@ impl ProofLang {
         match self {
             ProofLang::En => "en",
             ProofLang::Pl => "pl",
+            ProofLang::El => "el",
             ProofLang::Bg => "bg",
             ProofLang::Pt => "pt",
             ProofLang::It => "it",
@@ -146,6 +152,15 @@ mod tests {
         for bad in ["", " ", "p", "1pl", "pl--PL", "pl PL", "pl-PL;", "polski język", "-pl", "pl-", "abcdefghi", &"a".repeat(40)] {
             assert_eq!(normalize_tag(bad), None, "{bad:?}");
         }
+    }
+
+    #[test]
+    fn greek_tags_resolve() {
+        for tag in ["el", "el-GR", "EL_gr", "ell", "gre"] {
+            assert_eq!(ProofLang::from_tag(Some(tag)), ProofLang::El);
+        }
+        assert_eq!(ProofLang::El.code(), "el");
+        assert!(ProofLang::El.is_proofed());
     }
 
     #[test]
