@@ -2774,3 +2774,48 @@ preview	Title	Τίτλος
 	Words:	Λέξεις:
 	Paragraphs:	Παράγραφοι:
 	Lines:	Γραμμές:
+
+# New upstream interface strings (October 2026).
+	All system fonts are already available.	Όλες οι γραμματοσειρές του συστήματος είναι ήδη διαθέσιμες.
+	Bottom Left Cell	Κάτω αριστερό κελί
+	Bottom Right Cell	Κάτω δεξί κελί
+	Column {n}	Στήλη {n}
+	Even Banded Columns	Ζυγές στήλες με σκίαση
+	Even Banded Rows	Ζυγές σειρές με σκίαση
+	Finding printers…	Αναζήτηση εκτυπωτών…
+	Formula:	Τύπος:
+	Grayscale	Κλίμακα του γκρι
+	Header row	Γραμμή κεφαλίδων
+	Inside Horizontal Border	Εσωτερικό οριζόντιο περίγραμμα
+	Inside Vertical Border	Εσωτερικό κατακόρυφο περίγραμμα
+	Load System Installed Fonts…	Φόρτωση εγκατεστημένων γραμματοσειρών συστήματος…
+	Loaded {count} system fonts.	Φορτώθηκαν {count} γραμματοσειρές συστήματος.
+	Local font access is not supported by your browser.	Το πρόγραμμα περιήγησής σας δεν υποστηρίζει την πρόσβαση σε τοπικές γραμματοσειρές.
+	Local font access was denied.	Δεν επιτράπηκε η πρόσβαση στις τοπικές γραμματοσειρές.
+	Medium	Μεσαίο
+	My list has	Η λίστα μου περιέχει
+	Narrow	Στενό
+	Narrow  {size} all	Στενό  {size} παντού
+	No header row	Χωρίς γραμμή κεφαλίδων
+	No printers found. Configure a system printer or export a PDF.	Δεν βρέθηκαν εκτυπωτές. Ρυθμίστε έναν εκτυπωτή συστήματος ή εξαγάγετε σε PDF.
+	Normal  {size} all	Κανονικό  {size} παντού
+	Odd Banded Columns	Μονές στήλες με σκίαση
+	Odd Banded Rows	Μονές σειρές με σκίαση
+	One-sided	Μονής όψης
+	Paste function:	Επικόλληση συνάρτησης:
+	Print failed: the printing worker stopped.	Η εκτύπωση απέτυχε: η διεργασία εκτύπωσης σταμάτησε.
+	Print job submitted.	Η εργασία εκτύπωσης υποβλήθηκε.
+	Print job submitted: {receipt}	Η εργασία εκτύπωσης υποβλήθηκε: {receipt}
+	Print settings	Ρυθμίσεις εκτύπωσης
+	Printer	Εκτυπωτής
+	Printer default	Προεπιλογή εκτυπωτή
+	Printer discovery failed.	Απέτυχε ο εντοπισμός εκτυπωτών.
+	Refresh printers	Ανανέωση εκτυπωτών
+	Select a printer	Επιλέξτε εκτυπωτή
+	Submit print job	Υποβολή εργασίας εκτύπωσης
+	Submitting print job…	Αποστολή εργασίας εκτύπωσης…
+	Top Left Cell	Επάνω αριστερό κελί
+	Top Right Cell	Επάνω δεξί κελί
+	Two-sided printing	Εκτύπωση διπλής όψης
+	Two-sided: long edge	Διπλής όψης: αναστροφή στη μεγάλη πλευρά
+	Two-sided: short edge	Διπλής όψης: αναστροφή στη μικρή πλευρά
