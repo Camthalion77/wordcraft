@@ -1,0 +1,93 @@
+name: WordCraft Greek - Intel Mac build
+
+# Manual build, isolated from PR #1942.
+# This workflow lives ONLY on Camthalion77/wordcraft's main branch;
+# its checkout intentionally builds the separate Greek feature branch.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wordcraft-greek-intel-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build WordCraft Greek (Intel)
+    runs-on: macos-15-intel
+    timeout-minutes: 180
+    env:
+      MACOSX_DEPLOYMENT_TARGET: "11.0"
+      CARGO_INCREMENTAL: "0"
+      # This is a personal test build. Avoid expensive thin-LTO passes.
+      CARGO_PROFILE_RELEASE_LTO: "false"
+
+    steps:
+      - name: Check out Greek pull-request branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/greek-localization-spelling
+          persist-credentials: false
+
+      - name: Confirm Greek code is present
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s crates/ui-egui/src/i18n/el.tsv
+          test -s crates/proof/src/el.rs
+          grep -Fq 'include_str!("el.tsv")' crates/ui-egui/src/i18n/mod.rs
+          echo "Greek source commit: $(git rev-parse HEAD)"
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-apple-darwin
+
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: greek-wordcraft-intel
+
+      - name: Compile Intel macOS desktop app
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --release --locked --jobs 3 -p wordcraft --target x86_64-apple-darwin
+
+      - name: Create and ad-hoc sign WordCraft.app
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP="$RUNNER_TEMP/WordCraft.app"
+          ZIP="$RUNNER_TEMP/WordCraft-Greek-Intel-macOS.zip"
+          VERSION="$(awk -F '"' '/^version = "/ { print $2; exit }' Cargo.toml)"
+          test -n "$VERSION"
+          BUILD_SHA="$(git rev-parse --short HEAD)"
+
+          mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+          cp target/x86_64-apple-darwin/release/wordcraft "$APP/Contents/MacOS/WordCraft"
+          cp assets/app-icon/wordcraft.icns "$APP/Contents/Resources/WordCraft.icns"
+          sed -e "s/@VERSION@/$VERSION/g" \
+              -e "s/@SHORT_VERSION@/$VERSION/g" \
+              -e "s/@BUILD_SHA@/$BUILD_SHA/g" \
+              packaging/macos/Info.plist.in > "$APP/Contents/Info.plist"
+          printf 'APPL????' > "$APP/Contents/PkgInfo"
+          plutil -lint "$APP/Contents/Info.plist"
+          xattr -cr "$APP"
+          codesign --force --sign - --options runtime --timestamp=none \
+            --entitlements packaging/macos/entitlements.plist "$APP/Contents/MacOS/WordCraft"
+          codesign --force --sign - --options runtime --timestamp=none \
+            --entitlements packaging/macos/entitlements.plist "$APP"
+          codesign --verify --deep --strict --verbose=2 "$APP"
+          ditto -c -k --keepParent "$APP" "$ZIP"
+          ls -lh "$ZIP"
+
+      - name: Upload Intel WordCraft.app ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: WordCraft-Greek-Intel-macOS
+          path: ${{ runner.temp }}/WordCraft-Greek-Intel-macOS.zip
+          if-no-files-found: error
+          retention-days: 14
