@@ -1,13 +1,14 @@
-name: WordCraft Greek - Intel Mac build
+name: WordCraft Greek - Intel Mac build and Release
 
-# Manual build, isolated from PR #1942.
-# This workflow lives ONLY on Camthalion77/wordcraft's main branch;
-# its checkout intentionally builds the separate Greek feature branch.
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/greek-intel-build.yml
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: wordcraft-greek-intel-build
@@ -15,17 +16,16 @@ concurrency:
 
 jobs:
   build:
-    name: Build WordCraft Greek (Intel)
+    name: Build and publish WordCraft Greek (Intel)
     runs-on: macos-15-intel
     timeout-minutes: 180
     env:
       MACOSX_DEPLOYMENT_TARGET: "11.0"
       CARGO_INCREMENTAL: "0"
-      # This is a personal test build. Avoid expensive thin-LTO passes.
       CARGO_PROFILE_RELEASE_LTO: "false"
 
     steps:
-      - name: Check out Greek pull-request branch
+      - name: Check out Greek feature branch
         uses: actions/checkout@v4
         with:
           ref: feature/greek-localization-spelling
@@ -84,7 +84,22 @@ jobs:
           ditto -c -k --keepParent "$APP" "$ZIP"
           ls -lh "$ZIP"
 
-      - name: Upload Intel WordCraft.app ZIP
+      - name: Publish GitHub pre-release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          TAG="greek-intel-${{ github.run_number }}"
+          gh release create "$TAG" \
+            "$RUNNER_TEMP/WordCraft-Greek-Intel-macOS.zip" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$SOURCE_SHA" \
+            --title "WordCraft Greek Intel macOS (build ${{ github.run_number }})" \
+            --notes "Unofficial Greek localization test build from feature/greek-localization-spelling (commit $SOURCE_SHA). Intel macOS x86_64. Ad-hoc signed, not Apple notarized. Greek spelling requires a separately installed el_GR Hunspell dictionary." \
+
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: WordCraft-Greek-Intel-macOS
